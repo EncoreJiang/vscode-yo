@@ -1,15 +1,20 @@
 import { window, QuickPickItem, QuickPickOptions } from 'vscode';
 import Prompt from './prompt';
 import EscapeException from '../utils/EscapeException';
+const isFn = require('is-fn');
 
 export default class ListPrompt extends Prompt {
 
-	constructor(question: any) {
-		super(question);
+	constructor(question: any, answers: any) {
+		super(question, answers);
 	}
 
 	public render() {
-		const choices = this._question.choices.reduce((result, choice) => {
+		var optChoices = this._question.choices;
+		if (isFn(optChoices)) {
+			optChoices = optChoices(this._answers);
+		}
+		const choices = optChoices.reduce((result, choice) => {
 			result[choice.name] = choice.value;
 			return result;
 		}, {});
